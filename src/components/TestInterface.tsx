@@ -10,7 +10,9 @@ interface TestInterfaceProps {
 }
 
 const TestInterface: React.FC<TestInterfaceProps> = ({ user, userProfile, onTestComplete }) => {
-  const [questions] = useState<TestQuestion[]>(testService.getTestQuestions());
+  const [questions] = useState<TestQuestion[]>(
+    testService.getRandomQuestions(userProfile.branch, 20)
+  );
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [answers, setAnswers] = useState<{ [key: string]: number }>({});
   const [timeLeft, setTimeLeft] = useState(0);
