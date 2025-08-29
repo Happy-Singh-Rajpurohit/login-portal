@@ -1,8 +1,8 @@
 import { 
   createUserWithEmailAndPassword, 
   signInWithEmailAndPassword, 
-  sendPasswordResetEmail,
   signOut,
+  sendPasswordResetEmail,
   User,
   onAuthStateChanged
 } from 'firebase/auth';
@@ -142,9 +142,9 @@ export const authService = {
       } else if (error.code === 'auth/invalid-email') {
         throw new Error('Invalid email address');
       } else if (error.code === 'auth/too-many-requests') {
-        throw new Error('Too many reset attempts. Please try again later');
+        throw new Error('Too many requests. Please try again later');
       }
-      throw new Error(error.message || 'Failed to send reset email');
+      throw new Error(error.message || 'Failed to send password reset email');
     }
   },
 

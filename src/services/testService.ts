@@ -53,54 +53,34 @@ export interface UserTestStatus {
   lastActivity: Date;
 }
 export const testService = {
-  // Generate random questions based on user's branch
-  getRandomQuestions: (branch: string, count: number = 20): TestQuestion[] => {
-    const allQuestions = testService.getAllQuestions();
-    
-    // Filter questions based on branch
-    let filteredQuestions: TestQuestion[] = [];
-    
-    if (branch.toLowerCase().includes('computer') || branch.toLowerCase().includes('information')) {
-      // CS/IT students get more technical questions
-      const technicalQuestions = allQuestions.filter(q => q.category === 'Technical');
-      const generalQuestions = allQuestions.filter(q => q.category === 'General');
-      filteredQuestions = [
-        ...technicalQuestions.slice(0, Math.min(15, technicalQuestions.length)),
-        ...generalQuestions.slice(0, Math.min(5, generalQuestions.length))
-      ];
-    } else if (branch.toLowerCase().includes('electronics') || branch.toLowerCase().includes('electrical')) {
-      // ECE/EEE students get mixed questions with some electronics focus
-      const technicalQuestions = allQuestions.filter(q => q.category === 'Technical');
-      const generalQuestions = allQuestions.filter(q => q.category === 'General');
-      const electronicsQuestions = allQuestions.filter(q => q.category === 'Electronics');
-      filteredQuestions = [
-        ...technicalQuestions.slice(0, Math.min(8, technicalQuestions.length)),
-        ...electronicsQuestions.slice(0, Math.min(7, electronicsQuestions.length)),
-        ...generalQuestions.slice(0, Math.min(5, generalQuestions.length))
-      ];
-    } else {
-      // Other branches get balanced mix
-      const technicalQuestions = allQuestions.filter(q => q.category === 'Technical');
-      const generalQuestions = allQuestions.filter(q => q.category === 'General');
-      filteredQuestions = [
-        ...technicalQuestions.slice(0, Math.min(10, technicalQuestions.length)),
-        ...generalQuestions.slice(0, Math.min(10, generalQuestions.length))
-      ];
-    }
-    
-    // Shuffle the questions randomly
-    const shuffled = [...filteredQuestions].sort(() => Math.random() - 0.5);
-    
-    // Return the requested count or all available questions
-    return shuffled.slice(0, Math.min(count, shuffled.length));
-  },
-
   getTestSettings: (): TestSettings => ({
-    testStartTime: new Date('2025-08-30T21:30:00'), // Fixed start time for all users
+    testStartTime: new Date('2025-08-30T01:26:00'), // Fixed start time for all users
     testDuration: 10, // 10 minutes
     maxTabSwitches: 5,
     isTestActive: true
   }),
+
+  // Fisher-Yates shuffle algorithm for randomizing questions
+  shuffleQuestions: (questions: TestQuestion[], userId: string): TestQuestion[] => {
+    // Use userId as seed for consistent randomization per user
+    const seed = userId.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+    
+    // Create a seeded random number generator
+    let random = seed;
+    const seededRandom = () => {
+      random = (random * 9301 + 49297) % 233280;
+      return random / 233280;
+    };
+    
+    const shuffled = [...questions];
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(seededRandom() * (i + 1));
+      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+    
+    return shuffled;
+  },
+
   isTestAvailable: (): boolean => {
     const settings = testService.getTestSettings();
     return new Date() >= settings.testStartTime;
@@ -263,8 +243,8 @@ export const testService = {
       throw new Error(error.message || 'Failed to cancel test');
     }
   },
-  // All available test questions
-  getAllQuestions: (): TestQuestion[] => [
+  // Sample test questions
+  getTestQuestions: (): TestQuestion[] => [
     {
       id: '1',
       question: 'In rectangle ABCD, the diagonals AC and BD intersect at point E. If the area of the rectangle is 120 square units, what is the area of triangle EBC (the triangle with vertices E,B,C)?',
@@ -493,133 +473,11 @@ export const testService = {
       correctAnswer: 3,
       category: 'General'
     },
-    {
-      id: '21',
-      question: 'What is the primary function of a capacitor in an electronic circuit?',
-      options: [
-        'To amplify signals',
-        'To store electrical energy',
-        'To convert AC to DC',
-        'To regulate voltage'
-      ],
-      correctAnswer: 1,
-      category: 'Electronics'
-    },
-    {
-      id: '22',
-      question: 'In digital electronics, what does NOT gate do?',
-      options: [
-        'Inverts the input signal',
-        'Amplifies the input signal',
-        'Stores the input signal',
-        'Delays the input signal'
-      ],
-      correctAnswer: 0,
-      category: 'Electronics'
-    },
-    {
-      id: '23',
-      question: 'What is the unit of electrical resistance?',
-      options: [
-        'Volt',
-        'Ampere',
-        'Ohm',
-        'Watt'
-      ],
-      correctAnswer: 2,
-      category: 'Electronics'
-    },
-    {
-      id: '24',
-      question: 'Which programming paradigm does Python primarily support?',
-      options: [
-        'Only procedural',
-        'Only object-oriented',
-        'Multi-paradigm',
-        'Only functional'
-      ],
-      correctAnswer: 2,
-      category: 'Technical'
-    },
-    {
-      id: '25',
-      question: 'What does API stand for?',
-      options: [
-        'Application Programming Interface',
-        'Advanced Programming Integration',
-        'Automated Program Instruction',
-        'Application Process Integration'
-      ],
-      correctAnswer: 0,
-      category: 'Technical'
-    },
-    {
-      id: '26',
-      question: 'In a database, what is a primary key?',
-      options: [
-        'The first column in a table',
-        'A unique identifier for each record',
-        'The most important data field',
-        'A password for database access'
-      ],
-      correctAnswer: 1,
-      category: 'Technical'
-    },
-    {
-      id: '27',
-      question: 'What is the result of 3! + 4! (factorial)?',
-      options: [
-        '30',
-        '24',
-        '18',
-        '12'
-      ],
-      correctAnswer: 0,
-      category: 'General'
-    },
-    {
-      id: '28',
-      question: 'If A = 1, B = 2, C = 3... what is the sum of letters in "CODE"?',
-      options: [
-        '31',
-        '32',
-        '33',
-        '34'
-      ],
-      correctAnswer: 2,
-      category: 'General'
-    },
-    {
-      id: '29',
-      question: 'What is the next number in the sequence: 2, 6, 12, 20, 30, ?',
-      options: [
-        '40',
-        '42',
-        '44',
-        '46'
-      ],
-      correctAnswer: 1,
-      category: 'General'
-    },
-    {
-      id: '30',
-      question: 'In electronics, what does LED stand for?',
-      options: [
-        'Light Emitting Diode',
-        'Low Energy Device',
-        'Linear Electronic Display',
-        'Laser Emission Detector'
-      ],
-      correctAnswer: 0,
-      category: 'Electronics'
-    }
   ],
 
-  // Backward compatibility - returns random questions for user's branch
-  getTestQuestions: (): TestQuestion[] => {
-    // Default fallback - return all questions shuffled
-    const allQuestions = testService.getAllQuestions();
-    return [...allQuestions].sort(() => Math.random() - 0.5).slice(0, 20);
+  getRandomizedTestQuestions: (userId: string): TestQuestion[] => {
+    const baseQuestions = testService.getTestQuestions();
+    return testService.shuffleQuestions(baseQuestions, userId);
   },
 
   async submitTestResult(testResult: Omit<TestResult, 'id'>): Promise<string> {
