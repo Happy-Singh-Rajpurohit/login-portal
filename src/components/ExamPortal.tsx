@@ -29,33 +29,38 @@ const ExamPortal: React.FC<ExamPortalProps> = ({ user, userProfile, onLogout }) 
   }, []);
 
   useEffect(() => {
-    // Update countdown timers every second
-    const timer = setInterval(() => {
-      const now = new Date().getTime();
-      const startTime = testSettings.testStartTime.getTime();
-      const endTime = testService.getTestEndTime().getTime();
-      
-      // Time until test becomes available
-      const timeToStart = startTime - now;
-      if (timeToStart > 0) {
-        setTimeUntilStart(Math.floor(timeToStart / 1000));
-        setIsTestAvailable(false);
-      } else {
-        setTimeUntilStart(0);
-        setIsTestAvailable(true);
-        
-        // Time until test ends (1 hour after start)
-        const timeToEnd = endTime - now;
-        if (timeToEnd > 0) {
-          setTimeUntilEnd(Math.floor(timeToEnd / 1000));
-        } else {
-          setTimeUntilEnd(0);
-        }
-      }
-    }, 1000);
+  const timer = setInterval(() => {
+    const now = new Date().getTime();
+    const startTime = testSettings.testStartTime.getTime();
+    const windowEndTime = startTime + 30 * 60 * 1000; // 30 minutes after start
+    const testDurationEndTime = testService.getTestEndTime().getTime();
 
-    return () => clearInterval(timer);
-  }, [testSettings.testStartTime]);
+    // Time until test start window opens
+    const timeToStartWindow = startTime - now;
+
+    if (now < startTime) {
+      // Before window start
+      setTimeUntilStart(Math.floor(timeToStartWindow / 1000));
+      setIsTestAvailable(false);
+    } else if (now >= startTime && now <= windowEndTime) {
+      // Within the 30 min start window
+      setTimeUntilStart(0);
+      setIsTestAvailable(true);
+
+      // Also set time until the test duration ends (15 mins after test start)
+      const timeToTestDurationEnd = testDurationEndTime - now;
+      setTimeUntilEnd(timeToTestDurationEnd > 0 ? Math.floor(timeToTestDurationEnd / 1000) : 0);
+    } else {
+      // After 30 min start window
+      setTimeUntilStart(0);
+      setIsTestAvailable(false); // test can no longer be started
+      setTimeUntilEnd(0);
+    }
+  }, 1000);
+
+  return () => clearInterval(timer);
+}, [testSettings.testStartTime]);
+
 
   const checkUserTestStatus = async () => {
     try {
@@ -303,7 +308,7 @@ const ExamPortal: React.FC<ExamPortalProps> = ({ user, userProfile, onLogout }) 
                   <ul className="space-y-3 text-sm sm:text-base text-gray-300">
                     <li className="flex items-start space-x-3">
                       <div className="w-2 h-2 bg-blue-400 rounded-full mt-2 flex-shrink-0"></div>
-                      <span>The test duration is 20 minutes with 20 multiple-choice questions</span>
+                      <span>The test duration is 15 minutes with 20 multiple-choice questions</span>
                     </li>
                     <li className="flex items-start space-x-3">
                       <div className="w-2 h-2 bg-blue-400 rounded-full mt-2 flex-shrink-0"></div>

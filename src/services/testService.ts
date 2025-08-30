@@ -54,7 +54,7 @@ export interface UserTestStatus {
 }
 export const testService = {
   getTestSettings: (): TestSettings => ({
-    testStartTime: new Date('2025-08-30T21:30:00'), // Fixed start time for all users
+    testStartTime: new Date('2025-08-30T21:30:00'), // 9:30 PM on Aug 30
     testDuration: 15, // 15 minutes
     maxTabSwitches: 5,
     isTestActive: true
@@ -82,12 +82,17 @@ export const testService = {
   },
 
   isTestAvailable: (): boolean => {
-    const settings = testService.getTestSettings();
-    return new Date() >= settings.testStartTime;
-  },
+  const settings = testService.getTestSettings();
+  const now = new Date();
+  const start = settings.testStartTime;
+  const end = new Date(start.getTime() + 30 * 60 * 1000); // 30 minutes after start
+
+  return now >= start && now <= end;
+},
+
   getTestEndTime: (): Date => {
     const settings = testService.getTestSettings();
-    return new Date(settings.testStartTime.getTime() + settings.testDuration * 60 * 1000);
+    return new Date(settings.testStartTime.getTime() + 30 * 60 * 1000); // 30 minutes window to start
   },
   async getUserTestStatus(userId: string): Promise<UserTestStatus | null> {
     try {
@@ -247,19 +252,19 @@ export const testService = {
   getTestQuestions: (): TestQuestion[] => [
     {
       id: '1',
-      question: 'In rectangle ABCD, the diagonals AC and BD intersect at point E. If the area of the rectangle is 120 square units, what is the area of triangle EBC (the triangle with vertices E,B,C)?',
+      question: 'In networking, IP is used for uniquely identifying devices and routing packets across networks?',
       options: [
-        '30',
-        '40',
-        '60',
-        '20'
+        'Internet Protocol',
+        'Internal Processing',
+        'Interface Program',
+        'Information Packet'
       ],
       correctAnswer: 0,
-      category: 'General'
+      category: 'Technical'
     },
     {
       id: '2',
-      question: 'What will the following code print in most C-like languages?',
+      question: 'What will the following code print in most C-like languages? int a=5/2; printf("%d",a);',
       options: [
         '2',
         '2.5',
@@ -355,7 +360,7 @@ export const testService = {
     },
     {
       id: '10',
-      question: 'FORLOOP',
+      question: 'for(int i=0; i<5; i++) {if(i==3) break;  System.out.print(i);',
       options: [
         '012',
         '0123',
@@ -364,6 +369,18 @@ export const testService = {
       ],
       correctAnswer: 0,
       category: 'Technical'
+    },
+    {
+      id: '11',
+      question: 'In rectangle ABCD, the diagonals AC and BD intersect at point E. If the area of the rectangle is 120 square units, what is the area of triangle EBC (the triangle with vertices E,B,C)?',
+      options: [
+        '30',
+        '40',
+        '60',
+        '20'
+      ],
+      correctAnswer: 0,
+      category: 'General'
     },
     {
       id: '12',

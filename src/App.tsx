@@ -256,16 +256,88 @@ function App() {
       {/* Main Card */}
       <div className="relative z-10 w-full max-w-md">
         <div className="bg-black bg-opacity-40 backdrop-blur-xl rounded-2xl shadow-2xl border border-blue-500/20 p-6 sm:p-8 mx-4 sm:mx-0">
+          {/* Forgot Password Form */}
+          {showForgotPassword ? (
+            <div>
+              {/* Header */}
+              <div className="text-center mb-6 sm:mb-8">
+                <div className="inline-flex items-center justify-center w-16 h-16 mb-4">
+                  <img
+                    src={isteLogo}
+                    alt="ISTE Logo"
+                    className="w-12 h-12"
+                  />
+                </div>
+                <h1 className="text-2xl sm:text-3xl font-bold text-white mb-2">
+                  Reset Password
+                </h1>
+                <p className="text-gray-300 text-xs sm:text-sm">
+                  Enter your email to receive reset instructions
+                </p>
+              </div>
+
+              {/* Reset Form */}
+              <form onSubmit={handleForgotPassword} className="space-y-4 sm:space-y-6">
+                {/* Success Message */}
+                {resetMessage && (
+                  <div className="bg-green-500 bg-opacity-20 border border-green-500 rounded-lg p-3 text-green-400 text-xs sm:text-sm text-center">
+                    {resetMessage}
+                  </div>
+                )}
+
+                {/* Error Message */}
+                {resetError && (
+                  <div className="bg-red-500 bg-opacity-20 border border-red-500 rounded-lg p-3 text-red-400 text-xs sm:text-sm text-center">
+                    {resetError}
+                  </div>
+                )}
+
+                {/* Email Field */}
+                <div>
+                  <div className="relative">
+                    <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-blue-400 w-5 h-5" />
+                    <input
+                      type="email"
+                      placeholder="Enter your email address"
+                      value={resetEmail}
+                      onChange={(e) => setResetEmail(e.target.value)}
+                      className="w-full pl-12 pr-4 py-3 bg-gray-800 bg-opacity-50 border border-blue-500/30 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 text-sm sm:text-base"
+                      required
+                    />
+                  </div>
+                </div>
+
+                {/* Submit Button */}
+                <button
+                  type="submit"
+                  disabled={isResetting}
+                  className="w-full py-3 bg-gradient-to-r from-blue-600 to-cyan-600 text-white font-semibold rounded-lg hover:from-blue-700 hover:to-cyan-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-gray-900 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base"
+                >
+                  {isResetting ? 'Sending Reset Email...' : 'Send Reset Email'}
+                </button>
+
+                {/* Back to Login */}
+                <div className="text-center">
+                  <button
+                    type="button"
+                    onClick={handleBackToLogin}
+                    className="text-blue-400 hover:text-blue-300 transition-colors duration-300 text-xs sm:text-sm"
+                  >
+                    ← Back to Login
+                  </button>
+                </div>
+              </form>
+            </div>
+          ) : (
+            <div>
           {/* Header */}
           <div className="text-center mb-6 sm:mb-8">
             <div className="inline-flex items-center justify-center w-16 h-16  mb-4">
               <img
-  src={isteLogo}  // replace with your image URL or path
-  alt="Graduation Cap"
-  className="w-12 h-12"            // same width and height as before
-  // style={{ filter: 'brightness(0) invert(1)' }} // optional: to make the image white like text-white
-/>
-
+                src={isteLogo}
+                alt="ISTE Logo"
+                className="w-12 h-12"
+              />
             </div>
             <h1 className="text-2xl sm:text-3xl font-bold text-white mb-2">
               {isLogin ? 'Welcome Back' : 'Join ISTE'}
@@ -448,6 +520,8 @@ function App() {
               </div>
             )}
           </form>
+            </div>
+          )}
         </div>
       </div>
     </div>

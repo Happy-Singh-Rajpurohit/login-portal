@@ -22,10 +22,10 @@ const TestInterface: React.FC<TestInterfaceProps> = ({ user, userProfile, onTest
   const [isTestCancelled, setIsTestCancelled] = useState(false);
 
   useEffect(() => {
-    // Update countdown timer based on test end time (1 hour from start)
+    // Update countdown timer based on individual test duration (15 minutes from when user starts)
     const timer = setInterval(() => {
       const now = new Date().getTime();
-      const endTime = testService.getTestEndTime().getTime();
+      const endTime = startTime.getTime() + (testSettings.testDuration * 60 * 1000); // 15 minutes from when user started
       const difference = endTime - now;
       
       if (difference > 0) {
