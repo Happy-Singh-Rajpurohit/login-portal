@@ -415,7 +415,7 @@ export const testService = {
         'Both equal',
         'Cannot be compared'
       ],
-      correctAnswer: 2,
+      correctAnswer: 0,
       category: 'General'
     },
     {
@@ -451,7 +451,7 @@ export const testService = {
         '28',
         '26'
       ],
-      correctAnswer: 0,
+      correctAnswer: 2,
       category: 'General'
     },
     {
@@ -475,7 +475,7 @@ export const testService = {
         '28',
         '16'
       ],
-      correctAnswer: 2,
+      correctAnswer: 0,
       category: 'General'
     },
     {
