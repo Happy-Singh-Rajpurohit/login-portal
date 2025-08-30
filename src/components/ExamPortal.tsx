@@ -32,7 +32,7 @@ const ExamPortal: React.FC<ExamPortalProps> = ({ user, userProfile, onLogout }) 
   const timer = setInterval(() => {
     const now = new Date().getTime();
     const startTime = testSettings.testStartTime.getTime();
-    const windowEndTime = startTime + 30 * 60 * 1000; // 30 minutes after start
+    const windowEndTime = startTime + 20 * 60 * 1000; // 30 minutes after start
     const testDurationEndTime = testService.getTestEndTime().getTime();
 
     // Time until test start window opens
